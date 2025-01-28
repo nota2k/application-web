@@ -46,7 +46,6 @@
       const response = await fetch('https://randomuser.me/api/?results=20');
       const { results } = await response.json();
       allUsers = results;
-      filteredUsers = results;
       displayUsers(allUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -101,7 +100,7 @@
 
   function filterGender(allUsers, e) {
     let value = e.target.value;
-    filteredUsers = value == "all" ? allUsers : allUsers.filter((user) => user.gender == value);
+    filteredUsers = allUsers.filter(user => value == "all" || user.gender === value);
     displayUsers(filteredUsers);
   }
 
@@ -109,7 +108,7 @@
     let value = event.target.value;
 
     filteredUsers = users.filter(user => 
-      user.name.first.toLowerCase().normalize('NFD').includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').includes(value.toLowerCase())
+      user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(value.toLowerCase())
     );
 
     displayUsers(filteredUsers);
