@@ -109,7 +109,7 @@
     let value = event.target.value;
 
     filteredUsers = users.filter(user => 
-      user.name.first.toLowerCase().includes(value.toLowerCase()) || user.name.last.toLowerCase().includes(value.toLowerCase())
+      user.name.first.toLowerCase().normalize('NFD').includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').includes(value.toLowerCase())
     );
 
     displayUsers(filteredUsers);
