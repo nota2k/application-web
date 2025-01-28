@@ -100,7 +100,7 @@
     console.log(value);
 
     const filteredUsers = allUsers.filter(user => 
-      user.name.first.toLowerCase().includes(value.toLowerCase()) 
+      user.name.first.toLowerCase().includes(value.toLowerCase()) || user.name.last.toLowerCase().includes(value.toLowerCase())
     );
 
     displayUsers(filteredUsers);
