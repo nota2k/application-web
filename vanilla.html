@@ -82,8 +82,6 @@
     displayUsers(allUsers);
   }
 
-  
-
   function sortGender(allUsers) {
     allUsers.sort((a, b) => {
       const genderA = a.gender;
@@ -95,48 +93,43 @@
     displayUsers(allUsers);
   }
 
-  document.querySelector('#filter').addEventListener('change', (event) => {
-    const tbody = document.querySelector('#tbl-users tbody');
-    const rowsGender = Array.from(tbody.querySelectorAll('tr .gender'));
+  // document.querySelector('#filter').addEventListener('change', (event) => {
+  //   const tbody = document.querySelector('#tbl-users tbody');
+  //   const rowsGender = Array.from(tbody.querySelectorAll('tr .gender'));
+  //   let value = event.target.value;
+  //   console.log(value);
+    
+  //   rowsGender.forEach(row => {
+  //     if (value === 'all') {
+  //       row.parentElement.style.display = 'table-row';
+  //     } else if (row.textContent !== value) {
+  //       row.parentElement.style.display = 'none';
+  //     } else {
+  //       row.parentElement.style.display = 'table-row';
+  //     }
+  //   });
+    
+  // })
+
+  // function filterGender(allUsers){
+  //   allUsers.filter((user) => user.gender == "" 
+  // }
+
+  function searchInput(allUsers,event){
     let value = event.target.value;
     console.log(value);
-    
-    rowsGender.forEach(row => {
-      if (value === 'all') {
-        row.parentElement.style.display = 'table-row';
-      } else if (row.textContent !== value) {
-        row.parentElement.style.display = 'none';
-      } else {
-        row.parentElement.style.display = 'table-row';
-      }
-    });
-    
-  })
 
-  document.querySelector('input#search').addEventListener('keyup', (event) => {
-    console.log(event.target.value);
-    const tbody = document.querySelector('#tbl-users tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr .firstname'));
-    let value = event.target.value;
-
-    if(value === '') {
-      rows.forEach(row => {
-        row.parentElement.style.display = 'table-row';
-      });
-    } else {
-      rows.forEach(row => {
-        if (row.textContent.toLowerCase().includes(value.toLowerCase())) {
-          row.parentElement.style.display = 'table-row';
-        } else {
-          row.parentElement.style.display = 'none';
-        }
-      });
-    }
-  })
+    const filteredUsers = allUsers.filter(user => 
+      user.name.first.toLowerCase().includes(value.toLowerCase()) 
+    );
+    
+    displayUsers(filteredUsers);
+  }
 
   document.getElementById('fetch-users').addEventListener('click', fetchUsers);
   document.querySelector('#sort-age').addEventListener('click', () => sortAge(allUsers))
   document.querySelector('#sort-gender').addEventListener('click', () => sortGender(allUsers))
+  document.querySelector('input#search').addEventListener('keyup', (event) => searchInput(allUsers,event));
 </script>
 </body>
 </html>
