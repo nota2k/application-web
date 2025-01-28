@@ -71,37 +71,29 @@
 
   let ascendant = true;
 
-  document.querySelector('#sort-age').addEventListener('click', (event) => {
-    const tbody = document.querySelector('#tbl-users tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    
-    rows.sort((a, b) => {
-      const ageA = parseInt(a.querySelector('.age').textContent);
-      const ageB = parseInt(b.querySelector('.age').textContent);
-      return ascendant ? ageA - ageB : ageB - ageA;
+  const tbody = document.querySelector('#tbl-users tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+
+  function sortAge(allUsers) {
+    allUsers.sort((a, b) => {
+      return ascendant ? a.dob.age - b.dob.age : b.dob.age - a.dob.age;
     });
-
     ascendant = !ascendant;
+    displayUsers(allUsers);
+  }
 
-    tbody.innerHTML = '';
-    rows.forEach(row => tbody.appendChild(row));
-  })
+  
 
-  document.querySelector('#sort-gender').addEventListener('click', (event) => {
-    const tbody = document.querySelector('#tbl-users tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    
-    rows.sort((a, b) => {
-      const genderA = a.querySelector('.gender').textContent;
-      const genderB =b.querySelector('.gender').textContent;
+  function sortGender(allUsers) {
+    allUsers.sort((a, b) => {
+      const genderA = a.gender;
+      const genderB = b.gender;
       return ascendant ? genderA.localeCompare(genderB) : genderB.localeCompare(genderA);
     });
 
     ascendant = !ascendant;
-
-    tbody.innerHTML = '';
-    rows.forEach(row => tbody.appendChild(row));
-  })
+    displayUsers(allUsers);
+  }
 
   document.querySelector('#filter').addEventListener('change', (event) => {
     const tbody = document.querySelector('#tbl-users tbody');
@@ -143,6 +135,8 @@
   })
 
   document.getElementById('fetch-users').addEventListener('click', fetchUsers);
+  document.querySelector('#sort-age').addEventListener('click', () => sortAge(allUsers))
+  document.querySelector('#sort-gender').addEventListener('click', () => sortGender(allUsers))
 </script>
 </body>
 </html>
