@@ -6,18 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.fluid.classless.min.css">
-</head>
+    <style>
+        thead th {
+            cursor: pointer;
+        }
 
+        thead th:hover {
+            text-decoration: underline;
+        }
+
+        thead th svg {
+            transition: 0.2s ease-in-out all;
+        }
+
+        thead th svg.rotate {
+            transform: rotate(180deg);
+        }
+
+        th.sorted-asc svg, th.sorted-desc svg {
+            display: inline;
+        }
+    </style>
+</head>
 <body>
 <main>
     <div>
         <h1>Vanilla JS Example</h1>
         <hr>
         <button id="fetch-users">Fetch Users</button>
-        <select id="filter">Filtrer
-          <option value="all">Tous</option>
-          <option value="male">Homme</option>
-          <option value="female">Femme</option>
+        <select id="filter">
+            <option value="all">Tous</option>
+            <option value="male">Homme</option>
+            <option value="female">Femme</option>
         </select>
         <input type="text" id="search" placeholder="Rechercher">
     </div>
@@ -25,9 +45,9 @@
         <thead>
         <tr>
             <th>Photo</th>
-            <th class="name">Nom<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg></th>
-            <th class="gender">Genre<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg></th>
-            <th class="age">Age<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg></th>
+            <th class="name">Nom<svg class="sort-icon"></svg></th>
+            <th class="gender">Genre<svg class="sort-icon"></svg></th>
+            <th class="age">Age<svg class="sort-icon"></svg></th>
             <th class="mail">Email</th>
             <th class="tel">Tel</th>
         </tr>
@@ -37,114 +57,103 @@
 </main>
 
 <script>
-  
-  let allUsers = []
-  let filteredUsers = []
-  
-  async function fetchUsers() {
-    try {
-      const response = await fetch('https://randomuser.me/api/?results=20');
-      const { results } = await response.json();
-      allUsers = results;
-      displayUsers(allUsers);
-    } catch (error) {
-      console.error('Error fetching users:', error);
+    let allUsers = [];
+    let filteredByGenderUsers = [];
+    let filteredUsers = [];
+    let currentSort = { column: '', direction: 'asc' };
+
+    async function fetchUsers() {
+        try {
+            const response = await fetch('https://randomuser.me/api/?results=20');
+            const { results } = await response.json();
+            allUsers = results;
+            filteredByGenderUsers = results;
+            filteredUsers = results;
+            displayUsers(filteredUsers);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
     }
-  }
 
-  function displayUsers(users){
-     const tbody = document.querySelector('#tbl-users tbody');
-      tbody.innerHTML = users.map(user => `
-        <tr>
-            <td><img src="${user.picture.thumbnail}" alt="${user.name.first} Photo"></td>
-            <td class="firstname">${user.name.first} ${user.name.last}</td>
-            <td class="gender">${user.gender}</td>
-            <td class="age">${user.dob.age}</td>
-            <td class="email">${user.email}</td>
-            <td class="phone">${user.phone}</td>
-        </tr>
-    `).join('');
-  }
+    function displayUsers(users) {
+        const tbody = document.querySelector('#tbl-users tbody');
+        tbody.innerHTML = users.map(user => `
+            <tr>
+                <td><img src="${user.picture.thumbnail}" alt="${user.name.first} Photo"></td>
+                <td class="firstname">${user.name.first} ${user.name.last}</td>
+                <td class="gender">${user.gender}</td>
+                <td class="age">${user.dob.age}</td>
+                <td class="email">${user.email}</td>
+                <td class="phone">${user.phone}</td>
+            </tr>
+        `).join('');
+    }
 
-  let ascendant = true;
+    function sortUsers(column) {
+        const isAsc = currentSort.direction === 'asc';
+        filteredUsers.sort((a, b) => {
+            let valueA, valueB;
+            if (column === 'name') {
+                valueA = a.name.first;
+                valueB = b.name.first;
+            } else if (column === 'gender') {
+                valueA = a.gender;
+                valueB = b.gender;
+            } else if (column === 'age') {
+                valueA = a.dob.age;
+                valueB = b.dob.age;
+            }
+            return isAsc ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+        });
+        currentSort.direction = isAsc ? 'desc' : 'asc';
+        currentSort.column = column;
+        displayUsers(filteredUsers);
+        updateSortIcon();
+    }
 
-  function sortAge(users) {
-    users.sort((a, b) => {
-      return ascendant ? a.dob.age - b.dob.age : b.dob.age - a.dob.age;
+    function updateSortIcon() {
+        document.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sorted-asc', 'sorted-desc');
+            const svg = th.querySelector('svg');
+            if (svg) svg.classList.remove('rotate');
+        });
+        const sortedTh = document.querySelector(`.${currentSort.column}`);
+        sortedTh.classList.add(`sorted-${currentSort.direction}`);
+        const sortedSvg = sortedTh.querySelector('svg');
+        if (sortedSvg) sortedSvg.classList.toggle('rotate', currentSort.direction === 'desc');
+    }
+
+    function filterGender(e) {
+        const value = e.target.value;
+        filteredByGenderUsers = allUsers.filter(user => value === "all" || user.gender === value);
+        filteredUsers = filteredByGenderUsers;
+        displayUsers(filteredUsers);
+    }
+
+    function searchInput(e) {
+        const value = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+        filteredUsers = filteredByGenderUsers.filter(user =>
+            user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(value) ||
+            user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(value)
+        );
+        displayUsers(filteredUsers);
+    }
+
+    document.querySelectorAll('th').forEach(th => {
+        th.addEventListener('click', () => {
+            if (th.classList.contains('name')) {
+                sortUsers('name');
+            } else if (th.classList.contains('gender')) {
+                sortUsers('gender');
+            } else if (th.classList.contains('age')) {
+                sortUsers('age');
+            }
+        });
     });
-    ascendant = !ascendant;
-    displayUsers(users);
-  }
 
-  function sortGender(allUsers) {
-    allUsers.sort((a, b) => {
-      const genderA = a.gender;
-      const genderB = b.gender;
-      return ascendant ? genderA.localeCompare(genderB) : genderB.localeCompare(genderA);
-    });
-
-    ascendant = !ascendant;
-    displayUsers(allUsers);
-  }
-
-  function sortName(users) {
-    users.sort((a, b) => {
-      const nameA = a.name.first;
-      const nameB = b.name.first;
-      return ascendant ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-    });
-
-    ascendant = !ascendant;
-    displayUsers(users);
-  }
-
-  function filterGender(allUsers, e) {
-    let value = e.target.value;
-    filteredUsers = allUsers.filter(user => value == "all" || user.gender === value);
-    displayUsers(filteredUsers);
-  }
-
-  function searchInput(users,e){
-    let value = event.target.value;
-
-    filteredUsers = users.filter(user => 
-      user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(value.toLowerCase())
-    );
-
-    displayUsers(filteredUsers);
-  }
-
-  document.querySelectorAll('th').forEach((th) => {
-    th.addEventListener('click', () => {
-      const svg = th.querySelector('svg');
-      if (svg) {
-        svg.classList.toggle('rotate');
-      }
-    });
-  });
-
-  document.getElementById('fetch-users').addEventListener('click', fetchUsers);
-  document.querySelector('.age').addEventListener('click', () => sortAge(filteredUsers))
-  document.querySelector('.name').addEventListener('click', () => sortName(filteredUsers))
-  document.querySelector('.gender').addEventListener('click', () => sortGender(filteredUsers))
-  document.querySelector('#filter').addEventListener('change', (e) => filterGender(allUsers,e));
-  document.querySelector('input#search').addEventListener('keyup', (e) => searchInput(allUsers,e));
+    document.getElementById('fetch-users').addEventListener('click', fetchUsers);
+    document.querySelector('#filter').addEventListener('change', filterGender);
+    document.querySelector('input#search').addEventListener('keyup', searchInput);
 </script>
 </body>
-<style>
-  thead th{
-    cursor:pointer;
-  }
-
-  thead th:hover{
-    text-decoration: underline;
-  }
-
-  thead th svg{
-    transition:0.2s ease-in-out all;
-  }
-
-  thead th svg.rotate{
-    rotate: 180deg;
-  }
 </html>
