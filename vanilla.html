@@ -26,6 +26,17 @@
         th.sorted-asc svg, th.sorted-desc svg {
             display: inline;
         }
+
+        .filter-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            gap: 20px;
+        }
+
+        .filter-wrapper > * {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -34,12 +45,16 @@
         <h1>Vanilla JS Example</h1>
         <hr>
         <button id="fetch-users">Fetch Users</button>
-        <select id="filter">
-            <option value="all">Tous</option>
-            <option value="male">Homme</option>
-            <option value="female">Femme</option>
-        </select>
-        <input type="text" id="search" placeholder="Rechercher">
+        <div class="filter-wrapper">
+            <select id="filter">
+                <option value="all">Tous</option>
+                <option value="male">Homme</option>
+                <option value="female">Femme</option>
+            </select>
+            <input type="text" id="search" placeholder="Rechercher">
+            <input type="range" id="age" min="0" max="100" step="1" value="100">
+            <span id="age-value">100</span>
+        </div>
     </div>
     <table id="tbl-users">
         <thead>
@@ -59,6 +74,7 @@
 <script>
     let allUsers = [];
     let filteredByGenderUsers = [];
+    let filteredByAgeUsers = [];
     let filteredUsers = [];
     let currentSort = { column: '', direction: 'asc' };
 
@@ -68,6 +84,7 @@
             const { results } = await response.json();
             allUsers = results;
             filteredByGenderUsers = results;
+            filteredByAgeUsers = results;
             filteredUsers = results;
             displayUsers(filteredUsers);
         } catch (error) {
@@ -126,16 +143,37 @@
     function filterGender(e) {
         const value = e.target.value;
         filteredByGenderUsers = allUsers.filter(user => value === "all" || user.gender === value);
-        filteredUsers = filteredByGenderUsers;
-        displayUsers(filteredUsers);
+        applyFilters();
     }
 
     function searchInput(e) {
         const value = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-        filteredUsers = filteredByGenderUsers.filter(user =>
+        filteredUsers = filteredByAgeUsers.filter(user =>
             user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(value) ||
             user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(value)
         );
+        displayUsers(filteredUsers);
+    }
+
+    function betweenAge(max) {
+        filteredByAgeUsers = filteredByGenderUsers.filter(user => user.dob.age <= max);
+        applyFilters();
+    }
+
+    function updateAgeValue(e) {
+        const ageValue = document.querySelector('#age-value');
+        ageValue.textContent = e.target.value;
+        betweenAge(e.target.value);
+    }
+
+    function applyFilters() {
+        const searchValue = document.querySelector('#search').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+        filteredUsers = filteredByAgeUsers.filter(user =>
+            (user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(searchValue) ||
+            user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(searchValue))
+        );
+
         displayUsers(filteredUsers);
     }
 
@@ -154,6 +192,7 @@
     document.getElementById('fetch-users').addEventListener('click', fetchUsers);
     document.querySelector('#filter').addEventListener('change', filterGender);
     document.querySelector('input#search').addEventListener('keyup', searchInput);
+    document.getElementById('age').addEventListener('input', updateAgeValue);
 </script>
 </body>
 </html>
