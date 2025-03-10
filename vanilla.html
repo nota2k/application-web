@@ -7,8 +7,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.fluid.classless.min.css">
-</head>
+    <style>
+        thead th {
+            cursor: pointer;
+        }
 
+        thead th:hover {
+            text-decoration: underline;
+        }
+
+        thead th svg {
+            transition: 0.2s ease-in-out all;
+        }
+
+        thead th svg.rotate {
+            transform: rotate(180deg);
+        }
+
+        th.sorted-asc svg, th.sorted-desc svg {
+            display: inline;
+        }
+
+        .filter-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            gap: 20px;
+        }
+
+        .filter-wrapper > * {
+            flex: 1;
+        }
+    </style>
+</head>
 <body>
     <main>
         <div>
@@ -126,12 +157,12 @@
             applyFilters();
         }
 
-        function searchInput(users, e) {
-            let value = event.target.value;
+  function searchInput(users,e){
+    let value = event.target.value;
 
-            filteredUsers = users.filter(user =>
-                user.name.first.toLowerCase().normalize('NFD').includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').includes(value.toLowerCase())
-            );
+    filteredUsers = users.filter(user => 
+      user.name.first.toLowerCase().normalize('NFD').includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').includes(value.toLowerCase())
+    );
 
             ifEmpty(filteredUsers);
         }
