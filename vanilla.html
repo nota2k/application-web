@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>Vanilla JS Example</title>
     <meta charset="utf-8">
@@ -9,53 +10,73 @@
 </head>
 
 <body>
-<main>
-    <div>
-        <h1>Vanilla JS Example</h1>
-        <hr>
-        <button id="fetch-users">Fetch Users</button>
-        <select id="filter">Filtrer
-          <option value="all">Tous</option>
-          <option value="male">Homme</option>
-          <option value="female">Femme</option>
-        </select>
-        <input type="text" id="search" placeholder="Rechercher">
-    </div>
-    <table id="tbl-users">
-        <thead>
-        <tr>
-            <th>Photo</th>
-            <th class="name">Nom<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg></th>
-            <th class="gender">Genre<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg></th>
-            <th class="age">Age<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg></th>
-            <th class="mail">Email</th>
-            <th class="tel">Tel</th>
-        </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</main>
+    <main>
+        <div>
+            <h1>Vanilla JS Example</h1>cd
+            <hr>
+            <button id="fetch-users">Fetch Users</button>
+            <div class="filter-wrapper">
+                <select id="filter">
+                    <option value="all">Tous</option>
+                    <option value="male">Homme</option>
+                    <option value="female">Femme</option>
+                </select>
+                <input type="text" id="search" placeholder="Rechercher">
+                <input type="range" id="age" min="0" max="100" step="1" value="100">
+                <span id="age-value">100</span>
+            </div>
+        </div>
+        <table id="tbl-users">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th class="name">Nom<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg></th>
+                    <th class="gender">Genre<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg></th>
+                    <th class="age">Age<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down">
+                            <path d="m6 9 6 6 6-6" />
+                        </svg></th>
+                    <th class="mail">Email</th>
+                    <th class="tel">Tel</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </main>
 
-<script>
-  
-  let allUsers = []
-  let filteredUsers = []
-  
-  async function fetchUsers() {
-    try {
-      const response = await fetch('https://randomuser.me/api/?results=20');
-      const { results } = await response.json();
-      allUsers = results;
-      filteredUsers = results;
-      displayUsers(allUsers);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  }
+    <script>
 
-  function displayUsers(users){
-     const tbody = document.querySelector('#tbl-users tbody');
-      tbody.innerHTML = users.map(user => `
+        let allUsers = []
+        let filteredUsers = []
+        let filteredByAgeUsers = [];
+        let filteredByGenderUsers = [];
+
+        async function fetchUsers() {
+            try {
+                const response = await fetch('https://randomuser.me/api/?results=20');
+                const { results } = await response.json();
+                allUsers = results;
+                filteredByGenderUsers = results;
+                filteredByAgeUsers = results;
+                filteredUsers = results;
+                displayUsers(allUsers);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        }
+
+        function displayUsers(users) {
+            const tbody = document.querySelector('#tbl-users tbody');
+            tbody.innerHTML = users.map(user => `
         <tr>
             <td><img src="${user.picture.thumbnail}" alt="${user.name.first} Photo"></td>
             <td class="firstname">${user.name.first} ${user.name.last}</td>
@@ -65,87 +86,133 @@
             <td class="phone">${user.phone}</td>
         </tr>
     `).join('');
-  }
+        }
 
-  let ascendant = true;
+        let ascendant = true;
 
-  function sortAge(users) {
-    users.sort((a, b) => {
-      return ascendant ? a.dob.age - b.dob.age : b.dob.age - a.dob.age;
-    });
-    ascendant = !ascendant;
-    displayUsers(users);
-  }
+        function sortAge(users) {
+            users.sort((a, b) => {
+                return ascendant ? a.dob.age - b.dob.age : b.dob.age - a.dob.age;
+            });
+            ascendant = !ascendant;
+            displayUsers(users);
+        }
 
-  function sortGender(allUsers) {
-    allUsers.sort((a, b) => {
-      const genderA = a.gender;
-      const genderB = b.gender;
-      return ascendant ? genderA.localeCompare(genderB) : genderB.localeCompare(genderA);
-    });
+        function sortGender(allUsers) {
+            allUsers.sort((a, b) => {
+                const genderA = a.gender;
+                const genderB = b.gender;
+                return ascendant ? genderA.localeCompare(genderB) : genderB.localeCompare(genderA);
+            });
 
-    ascendant = !ascendant;
-    displayUsers(allUsers);
-  }
+            ascendant = !ascendant;
+            displayUsers(allUsers);
+        }
 
-  function sortName(users) {
-    users.sort((a, b) => {
-      const nameA = a.name.first;
-      const nameB = b.name.first;
-      return ascendant ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-    });
+        function sortName(users) {
+            users.sort((a, b) => {
+                const nameA = a.name.first;
+                const nameB = b.name.first;
+                return ascendant ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            });
 
-    ascendant = !ascendant;
-    displayUsers(users);
-  }
+            ascendant = !ascendant;
+            displayUsers(users);
+        }
 
-  function filterGender(allUsers, e) {
-    let value = e.target.value;
-    filteredUsers = value == "all" ? allUsers : allUsers.filter((user) => user.gender == value);
-    displayUsers(filteredUsers);
-  }
+        function filterGender(allUsers, e) {
+            let value = e.target.value;
+            filteredByGenderUsers = value == "all" ? allUsers : allUsers.filter((user) => user.gender == value);
+            applyFilters();
+        }
 
-  function searchInput(users,e){
-    let value = event.target.value;
+        function searchInput(users, e) {
+            let value = event.target.value;
 
-    filteredUsers = users.filter(user => 
-      user.name.first.toLowerCase().normalize('NFD').includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').includes(value.toLowerCase())
-    );
+            filteredUsers = users.filter(user =>
+                user.name.first.toLowerCase().normalize('NFD').includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').includes(value.toLowerCase())
+            );
 
-    displayUsers(filteredUsers);
-  }
+            ifEmpty(filteredUsers);
+        }
 
-  document.querySelectorAll('th').forEach((th) => {
-    th.addEventListener('click', () => {
-      const svg = th.querySelector('svg');
-      if (svg) {
-        svg.classList.toggle('rotate');
-      }
-    });
-  });
+        function betweenAge(max) {
+            filteredByAgeUsers = filteredByGenderUsers.filter(user => user.dob.age <= max);
+            applyFilters();
+        }
 
-  document.getElementById('fetch-users').addEventListener('click', fetchUsers);
-  document.querySelector('.age').addEventListener('click', () => sortAge(filteredUsers))
-  document.querySelector('.name').addEventListener('click', () => sortName(filteredUsers))
-  document.querySelector('.gender').addEventListener('click', () => sortGender(filteredUsers))
-  document.querySelector('#filter').addEventListener('change', (e) => filterGender(allUsers,e));
-  document.querySelector('input#search').addEventListener('keyup', (e) => searchInput(allUsers,e));
-</script>
+        function updateAgeValue(e) {
+            const ageValue = document.querySelector('#age-value');
+            ageValue.textContent = e.target.value;
+            betweenAge(e.target.value);
+        }
+
+        function applyFilters() {
+            const searchValue = document.querySelector('#search').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            const ageValue = document.getElementById('age').value;
+
+            filteredUsers = filteredByGenderUsers.filter(user =>
+                user.dob.age <= ageValue &&
+                (user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(searchValue) ||
+                    user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").includes(searchValue))
+            );
+
+            ifEmpty(filteredUsers);
+        }
+
+        function ifEmpty(users){
+            if(!users){
+                console.log('aucun utilisateur trouvé')
+            } else{
+                displayUsers(users);
+            }
+        }
+
+        document.querySelectorAll('th').forEach((th) => {
+            th.addEventListener('click', () => {
+                const svg = th.querySelector('svg');
+                if (svg) {
+                    svg.classList.toggle('rotate');
+                }
+            });
+        });
+
+        document.getElementById('fetch-users').addEventListener('click', fetchUsers);
+        document.querySelector('.age').addEventListener('click', () => sortAge(filteredUsers))
+        document.querySelector('.name').addEventListener('click', () => sortName(filteredUsers))
+        document.querySelector('.gender').addEventListener('click', () => sortGender(filteredUsers))
+        document.querySelector('#filter').addEventListener('change', (e) => filterGender(allUsers, e));
+        document.querySelector('input#search').addEventListener('keyup', (e) => searchInput(allUsers, e));
+        document.getElementById('age').addEventListener('input', updateAgeValue);
+
+    </script>
 </body>
 <style>
-  thead th{
-    cursor:pointer;
-  }
+    thead th {
+        cursor: pointer;
+    }
 
-  thead th:hover{
-    text-decoration: underline;
-  }
+    thead th:hover {
+        text-decoration: underline;
+    }
 
-  thead th svg{
-    transition:0.2s ease-in-out all;
-  }
+    thead th svg {
+        transition: 0.2s ease-in-out all;
+    }
 
-  thead th svg.rotate{
-    rotate: 180deg;
-  }
-</html>
+    thead th svg.rotate {
+        rotate: 180deg;
+    }
+
+    .filter-wrapper {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        gap: 20px;
+    }
+
+    .filter-wrapper>* {
+        flex: 1;
+    }
+
+    </html>
