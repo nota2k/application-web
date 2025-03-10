@@ -1,4 +1,8 @@
 <script setup>
+import { defineEmits } from 'vue';
+import { fetchUsers } from '@/data/data';
+
+const emits = defineEmits(['fetch-users']);
 
 </script>
 
@@ -6,7 +10,7 @@
   <div>
     <h1>Vanilla JS Example</h1>
     <hr>
-    <button id="fetch-users">Fetch Users</button>
+    <button @click="$emit('fetch-users')" id="fetch-users">Fetch Users</button>
     <div class="filter-wrapper">
       <select id="filter">
         <option value="all">Tous</option>

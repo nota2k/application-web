@@ -1,13 +1,24 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import TheUsers from './TheUsers.vue';
 import TheFilter from './TheFilter.vue';
-import { allUsers } from '../data/data.js';
+import { fetchUsers, allUsers } from '../data/data.js';
+
+let users = ref([]);
+
+const updateUsers = async () => {
+  try {
+			users.value = allUsers.value
+  } catch (error) {
+    console.error("Erreur lors de la récupération des utilisateurs:", error);
+  }
+};
 
 </script>
 
 <template>
   <main>
-    <TheFilter></TheFilter>
+    <TheFilter @fetch-users="updateUsers"></TheFilter>
     <table id="tbl-users">
       <thead>
         <tr>
@@ -32,7 +43,7 @@ import { allUsers } from '../data/data.js';
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in allUsers" :key="user.email">
+        <tr v-for="user in users" :key="user.email">
           <TheUsers 
             :thumbnail="user.picture.thumbnail" 
             :firstname="user.name.first" 

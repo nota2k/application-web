@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "web-to-vue"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "application web"
+	}
+}
