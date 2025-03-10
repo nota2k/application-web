@@ -1,26 +1,13 @@
 <script setup>
 import TheUsers from './TheUsers.vue';
+import TheFilter from './TheFilter.vue';
+import { allUsers } from '../data/data.js';
 
-const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
 </script>
 
 <template>
   <main>
-    <div>
-      <h1>Vanilla JS Example</h1>
-      <hr>
-      <button id="fetch-users">Fetch Users</button>
-      <div class="filter-wrapper">
-        <select id="filter">
-          <option value="all">Tous</option>
-          <option value="male">Homme</option>
-          <option value="female">Femme</option>
-        </select>
-        <input type="text" id="search" placeholder="Rechercher">
-        <input type="range" id="age" min="0" max="100" step="1" value="100">
-        <span id="age-value">100</span>
-      </div>
-    </div>
+    <TheFilter></TheFilter>
     <table id="tbl-users">
       <thead>
         <tr>
@@ -44,7 +31,19 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
           <th class="tel">Tel</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <tr v-for="user in allUsers" :key="user.email">
+          <TheUsers 
+            :thumbnail="user.picture.thumbnail" 
+            :firstname="user.name.first" 
+            :lastname="user.name.last"
+            :gender="user.gender" 
+            :email="user.email" 
+            :age="user.dob.age" 
+            :phone="user.phone">
+          </TheUsers>
+        </tr>
+      </tbody>
     </table>
   </main>
 </template>
@@ -65,15 +64,5 @@ const openReadmeInEditor = () => fetch('/__open-in-editor?file=README.md')
     thead th svg.rotate {
       rotate: 180deg;
     }
-  
-    .filter-wrapper {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      gap: 20px;
-    }
-  
-    .filter-wrapper>* {
-      flex: 1;
-    }
+
 </style>

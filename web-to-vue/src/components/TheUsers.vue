@@ -1,11 +1,26 @@
 <script setup>
+import { onMounted, defineProps } from 'vue';
+
+let props = defineProps({
+  thumbnail: String,
+  firstname: String,
+  lastname: String,
+  gender: String,
+  age: Number,
+  email: String,
+  phone: String
+
+})
 
 </script>
 
 <template>
-      <tbody>
-        
-      </tbody>
+  <td><img :src="props.thumbnail" :alt="`${props.firstname} Photo`"></td>
+  <td class="firstname">{{props.firstname}} {{props.lastname}}</td>
+  <td class="gender">{{props.gender}}</td>
+  <td class="age">{{props.age}}</td>
+  <td class="email">{{props.email}}</td>
+  <td class="phone">{{props.phone}}</td>
 </template>
 
 <style scoped>

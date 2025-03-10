@@ -1,0 +1,34 @@
+<script setup>
+
+</script>
+
+<template>
+  <div>
+    <h1>Vanilla JS Example</h1>
+    <hr>
+    <button id="fetch-users">Fetch Users</button>
+    <div class="filter-wrapper">
+      <select id="filter">
+        <option value="all">Tous</option>
+        <option value="male">Homme</option>
+        <option value="female">Femme</option>
+      </select>
+      <input type="text" id="search" placeholder="Rechercher">
+      <input type="range" id="age" min="0" max="100" step="1" value="100">
+      <span id="age-value">100</span>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+  .filter-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    gap: 20px;
+  }
+
+  .filter-wrapper>* {
+    flex: 1;
+  }
+</style>
