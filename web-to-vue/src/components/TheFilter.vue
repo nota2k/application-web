@@ -16,8 +16,8 @@ const emits = defineEmits(['fetch-users','filter-gender','filter-age','filter-se
         <option value="male">Homme</option>
         <option value="female">Femme</option>
       </select>
-      <input @keyup="$emit('filter-search')" type="text" id="search" placeholder="Rechercher">
-      <input @change="$emit('filter-age')" type="range" id="age" min="0" max="100" step="1" value="100">
+      <input @keyup="$emit('filter-search', $emit.target.value)" type="text" id="search" placeholder="Rechercher">
+      <input @change="$emit('filter-age', $event.target.value)" type="range" id="age" min="0" max="100" step="1" value="100">
       <span id="age-value">100</span>
     </div>
   </div>

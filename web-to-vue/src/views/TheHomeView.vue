@@ -12,6 +12,7 @@ let originalUsers = ref([]);
 
 // Filtre actuel pour le genre
 const genderFilter = ref('all');
+const ageFilter = ref(100);
 
 // Chargement des utilisateurs
 const getUsers = async () => {
@@ -36,14 +37,22 @@ const handleFilterGender = (value) => {
     // Sinon, on filtre
     users.value = originalUsers.value.filter(user => user.gender === value);
   }
-
   console.log('Filtre par genre appliqué:', value, 'Résultat:', users.value.length, 'utilisateurs');
 };
+
+// Fonction pour filtrer les utilisateurs par âge
+const handleFilterAge = (value) => {
+  ageFilter.value = value;
+  users.value = originalUsers.value.filter(user => user.dob.age <= value);
+
+  console.log(value)
+};
+
 </script>
 
 <template>
   <main>
-    <TheFilter @fetch-users="getUsers" @filter-gender="handleFilterGender"></TheFilter>
+    <TheFilter @fetch-users="getUsers" @filter-gender="handleFilterGender" @filter-age="handleFilterAge"></TheFilter>
     <table id="tbl-users">
       <thead>
         <tr>
