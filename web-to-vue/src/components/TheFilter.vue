@@ -1,8 +1,15 @@
 <script setup>
+import { ref } from 'vue';
 import { fetchUsers } from '@/data/data';
 
 const emits = defineEmits(['fetch-users','filter-gender','filter-age','filter-search']);
+const ageValue = ref(100);
 
+const handleAgeChange = (event) => {
+  const value = event.target.value;
+  ageValue.value = value;
+  emits('filter-age', value);
+};
 </script>
 
 <template>
@@ -16,9 +23,9 @@ const emits = defineEmits(['fetch-users','filter-gender','filter-age','filter-se
         <option value="male">Homme</option>
         <option value="female">Femme</option>
       </select>
-      <input @keyup="$emit('filter-search', $emit.target.value)" type="text" id="search" placeholder="Rechercher">
-      <input @change="$emit('filter-age', $event.target.value)" type="range" id="age" min="0" max="100" step="1" value="100">
-      <span id="age-value">100</span>
+      <input @keyup="$emit('filter-search', $event.target.value)" type="text" id="search" placeholder="Rechercher">
+      <input @change="handleAgeChange" type="range" id="age" min="0" max="100" step="1" value="100">
+      <span id="age-value">{{ ageValue }}</span>
     </div>
   </div>
 </template>

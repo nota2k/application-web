@@ -13,11 +13,12 @@ let originalUsers = ref([]);
 // Filtre actuel pour le genre
 const genderFilter = ref('all');
 const ageFilter = ref(100);
+const searchFilter = ref('');
 
 // Chargement des utilisateurs
-const getUsers = async () => {
+const getUsers = () => {
   try {
-    fetchUsers(); // Assurez-vous que cette fonction est bien async/await
+    fetchUsers();
     originalUsers.value = [...allUsers.value]; // Sauvegarde de tous les utilisateurs
     users.value = [...allUsers.value]; // Affichage initial de tous les utilisateurs
     console.log("Utilisateurs chargés:", users.value);
@@ -26,33 +27,36 @@ const getUsers = async () => {
   }
 };
 
-// Fonction pour filtrer les utilisateurs par genre
+// Méthode pour filtrer les utilisateurs par genre
 const handleFilterGender = (value) => {
   genderFilter.value = value;
 
   if (value === 'all') {
-    // Si 'all' est sélectionné, on restaure la liste complète
     users.value = [...originalUsers.value];
   } else {
-    // Sinon, on filtre
     users.value = originalUsers.value.filter(user => user.gender === value);
   }
   console.log('Filtre par genre appliqué:', value, 'Résultat:', users.value.length, 'utilisateurs');
 };
 
-// Fonction pour filtrer les utilisateurs par âge
+// Méthode pour filtrer les utilisateurs par âge
 const handleFilterAge = (value) => {
   ageFilter.value = value;
   users.value = originalUsers.value.filter(user => user.dob.age <= value);
+};
 
-  console.log(value)
+// Méthode pour filtrer les utilisateurs par âge
+const handleFilterSearch = (value) => {
+  searchFilter.value = value;
+  users.value = originalUsers.value.filter(user => user.name.first.toLowerCase().includes(value.toLowerCase()) || user.name.last.toLowerCase().includes(value.toLowerCase()));
+  console.log(searchFilter.value)
 };
 
 </script>
 
 <template>
   <main>
-    <TheFilter @fetch-users="getUsers" @filter-gender="handleFilterGender" @filter-age="handleFilterAge"></TheFilter>
+    <TheFilter @fetch-users="getUsers" @filter-gender="handleFilterGender" @filter-age="handleFilterAge" @filter-search="handleFilterSearch"></TheFilter>
     <table id="tbl-users">
       <thead>
         <tr>
