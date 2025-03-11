@@ -10,6 +10,7 @@ const handleAgeChange = (event) => {
   ageValue.value = value;
   emits('filter-age', value);
 };
+
 </script>
 
 <template>

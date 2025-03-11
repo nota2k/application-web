@@ -10,12 +10,10 @@ let users = ref([]);
 // Stockage de tous les utilisateurs originaux pour pouvoir filtrer dessus
 let originalUsers = ref([]);
 
-// Filtre actuel pour le genre
 const genderFilter = ref('all');
 const ageFilter = ref(100);
 const searchFilter = ref('');
 
-// Chargement des utilisateurs
 const getUsers = () => {
   try {
     fetchUsers();
