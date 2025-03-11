@@ -1,7 +1,7 @@
 <script setup>
 import { fetchUsers } from '@/data/data';
 
-const emits = defineEmits(['fetch-users']);
+const emits = defineEmits(['fetch-users','filter-gender','filter-age','filter-search']);
 
 </script>
 
@@ -11,13 +11,13 @@ const emits = defineEmits(['fetch-users']);
     <hr>
     <button @click="$emit('fetch-users')" id="fetch-users">Fetch Users</button>
     <div class="filter-wrapper">
-      <select id="filter">
+      <select @change="$emit('filter-gender', $event.target.value)" id="filter">
         <option value="all">Tous</option>
         <option value="male">Homme</option>
         <option value="female">Femme</option>
       </select>
-      <input type="text" id="search" placeholder="Rechercher">
-      <input type="range" id="age" min="0" max="100" step="1" value="100">
+      <input @keyup="$emit('filter-search')" type="text" id="search" placeholder="Rechercher">
+      <input @change="$emit('filter-age')" type="range" id="age" min="0" max="100" step="1" value="100">
       <span id="age-value">100</span>
     </div>
   </div>

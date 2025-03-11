@@ -24,7 +24,8 @@
             transform: rotate(180deg);
         }
 
-        th.sorted-asc svg, th.sorted-desc svg {
+        th.sorted-asc svg,
+        th.sorted-desc svg {
             display: inline;
         }
 
@@ -35,11 +36,12 @@
             gap: 20px;
         }
 
-        .filter-wrapper > * {
+        .filter-wrapper>* {
             flex: 1;
         }
     </style>
 </head>
+
 <body>
     <main>
         <div>
@@ -95,11 +97,10 @@
             try {
                 const response = await fetch('https://randomuser.me/api/?results=20');
                 const { results } = await response.json();
-                allUsers = results;
-                filteredByGenderUsers = results;
-                filteredByAgeUsers = results;
-                filteredUsers = results;
-                displayUsers(allUsers);
+
+                allUsers = [...allUsers, ...results];
+                applyAllFilters();
+
             } catch (error) {
                 console.error('Error fetching users:', error);
             }
@@ -157,12 +158,42 @@
             applyFilters();
         }
 
-  function searchInput(users,e){
-    let value = event.target.value;
+        function searchInput(users, e) {
+            let value = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
 
-    filteredUsers = users.filter(user => 
-      user.name.first.toLowerCase().normalize('NFD').includes(value.toLowerCase()) || user.name.last.toLowerCase().normalize('NFD').includes(value.toLowerCase())
-    );
+            // Si la recherche contient un espace, on considère qu'il s'agit d'une recherche nom/prénom
+            if (value.includes(' ')) {
+                const [firstPart, secondPart] = value.split(' ').filter(part => part.length > 0);
+
+                // Si les deux parties existent
+                if (firstPart && secondPart) {
+                    filteredUsers = users.filter(user => {
+                        const firstName = user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+                        const lastName = user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+                        // Recherche dans les deux sens (prénom nom ou nom prénom)
+                        return (firstName.includes(firstPart) && lastName.includes(secondPart)) ||
+                            (firstName.includes(secondPart) && lastName.includes(firstPart));
+                    });
+                } else {
+                    // Si une seule partie existe (cas où il y a un espace mais une partie vide)
+                    const searchPart = firstPart || secondPart;
+                    filteredUsers = users.filter(user => {
+                        const firstName = user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+                        const lastName = user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+                        return firstName.includes(searchPart) || lastName.includes(searchPart);
+                    });
+                }
+            } else {
+                // Recherche simple (sans espace) - comportement actuel
+                filteredUsers = users.filter(user => {
+                    const firstName = user.name.first.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+                    const lastName = user.name.last.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+                    return firstName.includes(value) || lastName.includes(value);
+                });
+            }
 
             ifEmpty(filteredUsers);
         }
@@ -191,10 +222,34 @@
             ifEmpty(filteredUsers);
         }
 
-        function ifEmpty(users){
-            if(!users){
-                console.log('aucun utilisateur trouvé')
-            } else{
+        function applyAllFilters() {
+            const genderFilter = document.querySelector('#filter').value;
+            const ageValue = document.getElementById('age').value;
+
+            filteredByGenderUsers = genderFilter === "all" ?
+                allUsers :
+                allUsers.filter((user) => user.gender === genderFilter);
+
+            filteredByAgeUsers = filteredByGenderUsers.filter(user => user.dob.age <= ageValue);
+
+            applyFilters(); a
+        }
+
+        function ifEmpty(users) {
+            const tbody = document.querySelector('#tbl-users tbody');
+
+            if (!users || users.length === 0) {
+                // Afficher un message quand aucun utilisateur n'est trouvé
+                tbody.innerHTML = `
+        <tr>
+            <td colspan="6" style="text-align: center; padding: 20px;">
+                <strong>Aucun utilisateur trouvé</strong>
+            </td>
+        </tr>
+    `;
+                console.log('aucun utilisateur trouvé');
+            } else {
+                // Afficher les utilisateurs normalement
                 displayUsers(users);
             }
         }

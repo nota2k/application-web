@@ -1,23 +1,21 @@
 import { ref } from 'vue';
 
 let allUsers = ref([]);
-let filteredUsers = ref([]);
-let filteredByAgeUsers = ref([]);
-let filteredByGenderUsers = ref([]);
 
-async function fetchUsers() {
+const fetchUsers = async () => {
      try {
           const response = await fetch('https://randomuser.me/api/?results=20');
           const { results } = await response.json();
-          allUsers.value = results;
-          filteredByGenderUsers.value = results;
-          filteredByAgeUsers.value = results;
-          filteredUsers.value = results;
+
+          // Ajouter les nouveaux utilisateurs aux utilisateurs existants
+          allUsers.value = [...allUsers.value, ...results];
+          return allUsers.value;
      } catch (error) {
           console.error('Error fetching users:', error);
+          throw error;
      }
-}
+};
 
-fetchUsers();
+// fetchUsers();
 
 export { allUsers, fetchUsers };
