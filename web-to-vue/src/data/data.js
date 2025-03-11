@@ -18,4 +18,4 @@ const fetchUsers = async () => {
 
 // fetchUsers();
 
-export { allUsers, fetchUsers };
+export { fetchUsers, allUsers };
