@@ -1,5 +1,4 @@
 <script setup>
-import { defineEmits } from 'vue';
 import { fetchUsers } from '@/data/data';
 
 const emits = defineEmits(['fetch-users']);

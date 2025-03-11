@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, defineProps } from 'vue';
+import { onMounted } from 'vue';
 
 let props = defineProps({
   thumbnail: String,
