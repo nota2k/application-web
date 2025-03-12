@@ -50,36 +50,70 @@ const handleFilterSearch = (value) => {
   console.log(searchFilter.value)
 };
 
+// Tri
+
+const sortStates = ref({
+  name: true,
+  gender: true,
+  age: true
+});
+
+function sortAge() {
+  users.value.sort((a, b) => {
+    return sortStates.value.age ? a.dob.age - b.dob.age : b.dob.age - a.dob.age;
+  });
+  sortStates.value.age = !sortStates.value.age;
+}
+
+function sortGender() {
+  users.value.sort((a, b) => {
+    const genderA = a.gender;
+    const genderB = b.gender;
+    return sortStates.value.gender ? genderA.localeCompare(genderB) : genderB.localeCompare(genderA);
+  });
+  sortStates.value.gender = !sortStates.value.gender;
+}
+
+function sortName() {
+  users.value.sort((a, b) => {
+    const nameA = a.name.first;
+    const nameB = b.name.first;
+    return sortStates.value.name ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+  });
+  sortStates.value.name = !sortStates.value.name;
+}
+
 </script>
 
 <template>
   <main>
-    <TheFilter @fetch-users="getUsers" @filter-gender="handleFilterGender" @filter-age="handleFilterAge" @filter-search="handleFilterSearch"></TheFilter>
+    <TheFilter @fetch-users="getUsers" @filter-gender="handleFilterGender" @filter-age="handleFilterAge"
+      @filter-search="handleFilterSearch"></TheFilter>
     <table id="tbl-users">
       <thead>
         <tr>
           <th>Photo</th>
-          <th class="name">
+          <th @click="sortName" class="name">
             Nom
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-chevron-down">
+              :class="['lucide lucide-chevron-down', { rotate: !sortStates.name }]">
               <path d="m6 9 6 6 6-6" />
             </svg>
           </th>
-          <th class="gender">
+          <th @click="sortGender" class="gender">
             Genre
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-chevron-down">
+              :class="['lucide lucide-chevron-down', { rotate: !sortStates.gender }]">
               <path d="m6 9 6 6 6-6" />
             </svg>
           </th>
-          <th class="age">
+          <th @click="sortAge" class="age">
             Age
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-              class="lucide lucide-chevron-down">
+              :class="['lucide lucide-chevron-down', { rotate: !sortStates.age }]">
               <path d="m6 9 6 6 6-6" />
             </svg>
           </th>

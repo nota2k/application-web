@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue';
-import { fetchUsers } from '@/data/data';
 
 const emits = defineEmits(['fetch-users','filter-gender','filter-age','filter-search']);
 const ageValue = ref(100);
